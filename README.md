@@ -11,7 +11,3 @@ Clone the GitHub repository. Open a terminal in that folder and type <code>pytho
 ## About This Clone
 
 If you download my Asteroids clone, you’ll probably notice that while the gameplay is similar, some aspects have been handled differently from the original. For example, asteroids are generated randomly rather than following recurring patterns.
-
-## Language
-
-Python 3 (Pygame)
