@@ -1,6 +1,6 @@
 # Asteroids
 
-[To the Asteroids page on my portfolio website](https://julian-hoelz.github.io/asteroids.html?lang=en)
+[To the **Asteroids** page on my portfolio website](https://julian-hoelz.github.io/asteroids.html?lang=en)
 
 ## Game Description
 
