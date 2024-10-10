@@ -1,5 +1,7 @@
 # Asteroids
 
+[To the Asteroids page on my portfolio website](https://julian-hoelz.github.io/asteroids.html?lang=en)
+
 ## Game Description
 
 Asteroids is an arcade game where you navigate a spaceship around asteroids and shoot at them. When hit, they break into smaller pieces and eventually disappear. Occasionally, flying saucers appear and shoot at you, increasing the challenge. You score points by hitting asteroids and flying saucers with bullets.
