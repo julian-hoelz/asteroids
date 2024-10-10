@@ -665,7 +665,7 @@ class Particle:
 # Diese Klasse repräsentiert ein Menü, durch das der Spieler navigieren kann:
 class Menu:
 
-    def __init__(self, title: str, text: str | None, transparent: bool, parent: Menu | None, button_data: tuple[ButtonData]) -> None:
+    def __init__(self, title: str, text: str | None, transparent: bool, parent: Menu | None, button_data: tuple[ButtonData, ...]) -> None:
         self.title_surface = TITLE_FONT.render(title, True, Color.WHITE) # die Textoberfläche für den Titel rendern
         self.title_pos = ((WIDTH - self.title_surface.get_width()) / 2, 100) # die Position des Titels
         self.set_text(text)
@@ -813,8 +813,13 @@ class Button:
             p2v3 = (self.x + self.text_surface.get_width() + 25, p1v3[1]) # Polygon 2 Vektor 3
             
             # die Polygone auf das Fenster zeichnen:
-            pygame.draw.polygon(screen, Color.WHITE, (p1v1, p1v2, p1v3))
-            pygame.draw.polygon(screen, Color.WHITE, (p2v1, p2v2, p2v3))
+            pygame.draw.line(screen, Color.WHITE, p1v1, p1v2)
+            pygame.draw.line(screen, Color.WHITE, p1v1, p1v3)
+            pygame.draw.line(screen, Color.WHITE, p2v1, p2v2)
+            pygame.draw.line(screen, Color.WHITE, p2v1, p2v3)
+            
+            # pygame.draw.polygon(screen, Color.WHITE, (p1v1, p1v2, p1v3))
+            # pygame.draw.polygon(screen, Color.WHITE, (p2v1, p2v2, p2v3))
 
 
 # Diese Datenklasse repräsentiert einen Highscore:
@@ -882,7 +887,7 @@ MAX_SPEED = 7.5 # die maximale Geschwindigkeit des Spielers
 FRICTION = 0.975 # die Reibung, die die Bewegung des Spielers abbremst
 
 SAUCER_MIN_STEPS = FPS * 3 # wie lange eine fliegende Untertasse sich mindestens in eine Richtung bewegt
-SAUCER_MAX_STEPS = FPS * 7 # wie lange eine fliegende Untertasse sich höchstens in eine Richtung bewegt
+SAUCER_MAX_STEPS = FPS * 5 # wie lange eine fliegende Untertasse sich höchstens in eine Richtung bewegt
 
 BULLET_SPEED = 10 # die Geschwindigkeit, mit der Kugeln sich bewegen
 BULLET_RADIUS = 2 # der Radius von Kugeln
@@ -1019,7 +1024,7 @@ def init() -> None:
     load_game() # das Spiel aus der Datei „data.json“ laden
     get_and_set_difficulty() # die Schwierigkeit anhand der bereits gespielten Ticks einstellen
     render_life_surface() # die Oberfläche mit der Lebensanzeige rendern
-    init_menues() # die Menüs initialisieren
+    init_menus() # die Menüs initialisieren
 
 
 # Diese Funktion wird einmal pro Tick aufgerufen und aktualisiert alles zu Aktualisierende:
@@ -1190,7 +1195,7 @@ def render(screen: pygame.Surface) -> None:
         score_surface = SCORE_FONT.render(str(score), True, Color.WHITE)
         screen.blit(score_surface, (15, 15)) # die Punktzahl rendern
         if add_points > 0: # wenn Punkte zur Punktzahl hinzukommen
-            add_points_surface = SCORE_FONT.render(' + %d' % add_points, True, Color.GREEN)
+            add_points_surface = SCORE_FONT.render('+%d' % add_points, True, Color.GREEN)
             # die Punkte, die zur Punktzahl hinzukommen, in Grün rendern:
             screen.blit(add_points_surface, (15 + score_surface.get_width(), 15)) 
         if new_high_score: # wenn der Spieler einen neuen Highscore aufgestellt hat
@@ -1223,15 +1228,22 @@ def init_constants() -> None:
     ASTEROID_DESPAWN_DISTANCE = ASTEROID_SPAWN_DISTANCE + 25
     
     # Die Schriftarten laden:
-    SCORE_FONT = pygame.font.SysFont('Impact', 36)
-    HIGHSCORE_FONT = pygame.font.SysFont('Impact', 18)
-    TITLE_FONT = pygame.font.SysFont('Impact', 56)
-    TEXT_FONT = pygame.font.SysFont('Impact', 28)
-    BUTTON_FONT = pygame.font.SysFont('Impact', 28)
+    SCORE_FONT = pygame.font.Font('hyperspace-font/HyperspaceBold.ttf', 36)
+    HIGHSCORE_FONT = pygame.font.Font('hyperspace-font/HyperspaceBold.ttf', 18)
+    TITLE_FONT = pygame.font.Font('hyperspace-font/HyperspaceBold.ttf', 56)
+    TEXT_FONT = pygame.font.Font('hyperspace-font/HyperspaceBold.ttf', 28)
+    BUTTON_FONT = pygame.font.Font('hyperspace-font/HyperspaceBold.ttf', 28)
+    
+    # SCORE_FONT = pygame.font.SysFont('Impact', 36)
+    # HIGHSCORE_FONT = pygame.font.SysFont('Impact', 18)
+    # TITLE_FONT = pygame.font.SysFont('Impact', 56)
+    # TEXT_FONT = pygame.font.SysFont('Impact', 28)
+    # BUTTON_FONT = pygame.font.SysFont('Impact', 28)
+    
 
 
 # Diese Funktion initialisiert die Menüs:
-def init_menues() -> None:
+def init_menus() -> None:
     global MAIN_MENU, PAUSE_MENU, GAME_OVER_MENU, SETTINGS_MENU, RESET_ALL_CONFIRM_MENU, HIGH_SCORES_MENU
     
     # das Hauptmenü initialisieren:
@@ -1528,7 +1540,7 @@ def new_asteroid_no_args() -> Asteroid:
     size = randsize() # eine zufällige Größe bestimmen
     spawn_angle = random.uniform(0.0, math.pi * 2) # Asteroiden erscheinen in einem Kreis um um das Fenter herum
     pos = PolarCoordinate(spawn_angle, ASTEROID_SPAWN_DISTANCE).cartesian().add(CENTER)
-    mot_angle = (spawn_angle + 2 * math.pi) * random.uniform(0.3, 0.7)
+    mot_angle = spawn_angle + math.pi + random.uniform(-math.pi * 0.375, math.pi * 0.375)
     return new_asteroid(size, pos, mot_angle)
 
 
@@ -1740,7 +1752,7 @@ def render_life_surface() -> None:
         PolarCoordinate(2 * math.pi * 0.16, 7.2),
         PolarCoordinate(2 * math.pi * 0.34, 7.2),
         PolarCoordinate(2 * math.pi * 0.36, 12)
-    ), stroke_weight=2, visible=True).render(life_surface)
+    ), stroke_weight=1, visible=True).render(life_surface)
 
 
 # Diese Funktion ermittelt die aktuelle Schwierigkeit und setzt sie:
